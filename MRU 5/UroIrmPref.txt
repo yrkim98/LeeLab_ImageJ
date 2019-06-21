@@ -1,0 +1,6 @@
+version=2
+DicomStackOpenerDialog=28
+ResultTablePref=3
+ResultTablePrecision=2
+ResultSave=15
+language=English
