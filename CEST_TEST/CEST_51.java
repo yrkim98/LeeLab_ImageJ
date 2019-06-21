@@ -1,5 +1,10 @@
-/** Selina Lui, Brian Kim
- *  UW Department of Radiology
+/** Selina Lui
+ *  University of Washington School of Medicine
+ *  Department of Radiology
+ *
+ *  Brian Kim
+ *  University of Washington School of Medicine
+ *  Department of Radiology
  *
  * Summary:
  * Aids in gathering parameters for CEST Analysis
@@ -13,6 +18,9 @@
  * 			  Cleaned-up some comments.
  * 05.22.19 - Edited code to work for 51 offsets, vs 14 before.
  * 06.10.2019 - Finished 51 offset functionality and tested to work correctly, need to implmenet closing window
+ * 06.21.19 - Edited file to prompt user for slices and offset counts, and uses that to generalize CEST mappings to any number
+ * of offsets or slices
+ *
  */
 
 import java.util.*;
