@@ -27,7 +27,7 @@ import ij.plugin.*;
 import ij.plugin.frame.*;
 
 
-	public class CEST_51 implements PlugIn {
+public class CEST_51 implements PlugIn {
 	
 	public static final String DESIRED_IMAGE = "3"; // Diffusion Constant image
 	public static final int START_SLICE = Integer.parseInt(DESIRED_IMAGE);
@@ -37,6 +37,10 @@ import ij.plugin.frame.*;
 	public static final String PATHS1 = "pdata/1";
 	public static final String IM = "/2dseq";
 	public static final String VIS_PAR = "/visu_pars";
+
+	private String userInput;
+	private boolean bAbort;
+	private int numSlices, numOffsets;
 	
 	/**
 	// For Windows:
@@ -46,10 +50,23 @@ import ij.plugin.frame.*;
 	*/
 	@Override
 	public void run(String arg) {
-		IJ.log("running newest version: bkim");
+		IJ.log("running newest version: bkim 2");
 		// Clears previous images if any
 		IJ.run("Close All", "");
-		
+		GenericDialog gd = new GenericDialog("CEST Parameters", IJ.getInstance());
+		gd.addMessage("Enter number of slices/Number of offsets (ex: 10/51)");
+		gd.addStringField("Parameters:", "", 50);
+		gd.showDialog();
+		if (gd.wasCanceled()){
+			bAbort = true;
+			return;
+		}
+		userInput = gd.getNextString();
+		if(userInput.length()==0){
+			IJ.error("No parameters entered");
+			bAbort = true;
+			return;
+		}
 		// Gets CEST directory
 		String dir = this.grabDir("cest_51_offsets", 25);
 		ImagePlus cest1 = this.getImage(dir, PATHS1);
@@ -72,23 +89,35 @@ import ij.plugin.frame.*;
 		
 		//Directory for saving the cest maps created
 		String saveDir = dir + PATHS1.substring(0, PATHS1.length() - 1);
+
+		int idx1 = userInput.indexOf("/");
+		if (idx1 == -1) {
+			throw new IllegalArgumentException("Need to input slice/offsets");
+		} else {
+			String userInputSlices = userInput.substring(0, idx1);
+			String userInputOffsets = userInput.substring(idx1 + 1);
+			IJ.log("slices: " + userInputSlices);
+			IJ.log("offsets: " + userInputOffsets);
+			this.numSlices = Integer.parseInt(userInputSlices);
+			this.numOffsets = Integer.parseInt(userInputOffsets);
+		}
 		
 		// Amide: create cest_map_35 for -5 and 5 ppm splits
 		//ImagePlus map50 = this.gagCreate(1, 501, cest1, zeroPow, 50, saveDir);
 		//for loop to create all cest maps for all frequencies, from 4.8, -4.8 to .2, -.2
 		int sliceNum = 1;
 		//outer loop through slices
-		for (int i = 1; i < 11; i++) {
-			int upperSlice = 500 + i;
-			int dirVal = 50;
+		for (int i = 1; i <= numSlices; i++) {
+			int upperSlice = ((numSlices * numOffsets) - numSlices) + i;
+			int dirVal = (numOffsets - 1);
 			int finalSlice = 0;
 			//inner loop through frequencies
-			for (int j = i; j <=250; j += 10) {
+			for (int j = i; j <=((numSlices * numOffsets) - numSlices) / 2; j += numSlices) {
 				ImagePlus map50 = this.gagCreate(j, upperSlice, cest1, zeroPow, "slice_" + sliceNum + " " + dirVal, saveDir);
 				IJ.log("for slice: " + sliceNum + " Combining: " +j + " and " + upperSlice);
 				WindowManager.getCurrentImage().close();
 				WindowManager.getCurrentImage().close();
-				upperSlice -= 10;
+				upperSlice -= numSlices;
 				dirVal -= 2;
 				finalSlice = j;
 
@@ -278,6 +307,13 @@ import ij.plugin.frame.*;
 			imp.changes = false;
 			imp.close();
 		}
+	}
+
+	/**
+	 * To parse user inputs.
+	 */
+	void getInput() {
+
 	}
 }
 

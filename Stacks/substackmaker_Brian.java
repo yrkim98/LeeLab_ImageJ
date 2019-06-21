@@ -38,8 +38,8 @@ import ij.plugin.filter.*;
  * @author barbo013@mc.duke.edu
 *  
    @author Brian Kim
- * @author radiology
- * @author UW medical
+ * @author Radiology
+ * @author University of Washington School of Medicine
  * @author yrkim98@uw.edu
  *
  *
